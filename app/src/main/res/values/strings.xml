@@ -2,6 +2,6 @@
     <string name="app_name">weather app</string>
     <string name="back">Back</string>
     <string name="refresh_data">Refresh Data</string>
-    <string name="units">Units</string>
+    <string name="units">Use imperial units</string>
     <string name="locations">Locations</string>
 </resources>

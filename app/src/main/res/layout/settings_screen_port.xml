@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <!-- Locations Section -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/textLocations"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,19 +22,20 @@
 
 
     <!-- Unit Switch Section -->
-    <Button
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/textUnits"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/units"
         android:textSize="25sp"
         android:textStyle="bold"
+        android:onClick="onUnitsSwitchClick"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/textLocations"
         app:layout_constraintStart_toStartOf="parent"
         />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/refreshDataButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
