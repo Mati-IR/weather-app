@@ -1,0 +1,47 @@
+<!-- settings_screen_port.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Locations Section -->
+    <Button
+        android:id="@+id/textLocations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/locations"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="onLocationsButtonClick"/>
+
+
+
+
+    <!-- Unit Switch Section -->
+    <Button
+        android:id="@+id/textUnits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/units"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/textLocations"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <Button
+        android:id="@+id/refreshDataButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/refresh_data"
+        android:textSize="25sp"
+        android:textStyle="bold"
+
+        app:layout_constraintTop_toBottomOf="@id/textUnits"
+        app:layout_constraintStart_toStartOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

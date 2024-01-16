@@ -1,11 +1,13 @@
 package com.example.weatherapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.example.weatherapp.Fragments.PageAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +34,19 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the current item to the saved index
         viewPager.setCurrentItem(currentFragmentIndex, false);
+    }
+
+    public void openSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+    public void closeSettings(View view) {
+        if (getResources().getConfiguration().orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+            setContentView(R.layout.main_screen_port);
+        }
+        else {
+            setContentView(R.layout.main_screen_land);
+        }
     }
 
     @Override
