@@ -171,6 +171,7 @@ public class PlaceTestAdapter extends RecyclerView.Adapter<PlaceTestAdapter.Pred
 
         @Override
         public void onClick(View v) {
+            // change adapter to PlaceTestAdapter
             PlaceAutocomplete item = mResultList.get(getAdapterPosition());
             String placeId = String.valueOf(item.placeId);
 

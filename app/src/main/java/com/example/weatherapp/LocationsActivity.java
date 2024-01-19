@@ -34,6 +34,8 @@ public class LocationsActivity extends AppCompatActivity implements PlaceTestAda
 
     LocationAdapter locationAdapter;
 
+    MergedAdapter mergedAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,13 +51,12 @@ public class LocationsActivity extends AppCompatActivity implements PlaceTestAda
         locations_recycler_view = findViewById(R.id.locations_recycler_view);
         get_location_edit_text = findViewById(R.id.get_location_edit_text);
 
+
         Places.initialize(LocationsActivity.this, getResources().getString(R.string.google_maps_key));
         placeTestAdapter = new PlaceTestAdapter(this);
         get_location_edit_text.addTextChangedListener(getLocationTextWatcher());
         locations_recycler_view.setLayoutManager(new LinearLayoutManager(LocationsActivity.this));
         placeTestAdapter.setClickListener(this);
-        locations_recycler_view.setAdapter(placeTestAdapter);
-        placeTestAdapter.notifyDataSetChanged();
 
         // Add locations to the recycler view
         // get locations from DataStorage
@@ -67,10 +68,19 @@ public class LocationsActivity extends AppCompatActivity implements PlaceTestAda
 
         //get selected location
         int selectedLocation = dataStorage.getSelectedLocation(this);
-        locationAdapter = new LocationAdapter(locations, selectedLocation);
+        locationAdapter = new LocationAdapter(this, locations, selectedLocation, dataStorage, locations_recycler_view);
 
-        // Set the LocationAdapter on the RecyclerView
+        this.mergedAdapter = new MergedAdapter(placeTestAdapter, locationAdapter, dataStorage);
         locations_recycler_view.setAdapter(locationAdapter);
+        locationAdapter.notifyDataSetChanged();
+    }
+
+    // function triggered by get_location_edit_text, it is meant to change adapter to placeTestAdapter
+    public void switchAdapter(View view) {
+        locations_recycler_view.setAdapter(mergedAdapter);
+        this.placeTestAdapter.notifyDataSetChanged();
+        this.mergedAdapter.notifyDataSetChanged();
+        this.locationAdapter.notifyDataSetChanged();
     }
 
     public TextWatcher getLocationTextWatcher() {
@@ -87,13 +97,22 @@ public class LocationsActivity extends AppCompatActivity implements PlaceTestAda
 
             @Override
             public void afterTextChanged(android.text.Editable s) {
+                // if adapter is locationAdapter, change it to mergedAdapter
+                if (locations_recycler_view.getAdapter() == locationAdapter) {
+                    locations_recycler_view.setAdapter(mergedAdapter);
+                }
                 if (!s.toString().isEmpty()) {
                     placeTestAdapter.getFilter().filter(s.toString());
-                    if ((locations_recycler_view.getVisibility() == View.GONE)) {
+                    if (!(locations_recycler_view.getVisibility() == View.VISIBLE)) {
                         locations_recycler_view.setVisibility(android.view.View.VISIBLE);
                     }
                 } else if (locations_recycler_view.getVisibility() == View.VISIBLE) {
                     locations_recycler_view.setVisibility(View.GONE);
+                }
+
+                // Check if the adapter is null before trying to update the RecyclerView
+                if (locations_recycler_view.getAdapter() != null) {
+                    locations_recycler_view.getAdapter().notifyDataSetChanged();
                 }
             }
         };
@@ -112,89 +131,5 @@ public class LocationsActivity extends AppCompatActivity implements PlaceTestAda
         Toast.makeText(this, debugGetLocations, Toast.LENGTH_SHORT).show();
     }
 
-    private class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
-        private List<String> locations;
-        private int selectedLocation;
-        LocationAdapter(List<String> locations, int selectedLocation) {
-            this.locations = locations;
-            this.selectedLocation = selectedLocation;
-        }
-
-        @NonNull
-        @Override
-        public LocationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_saved_location_port, parent, false);
-            return new LocationViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
-            String location = locations.get(position);
-            holder.bind(location);
-        }
-
-        @Override
-        public int getItemCount() {
-            return locations.size();
-        }
-
-        // ViewHolder class for each location item
-        class LocationViewHolder extends RecyclerView.ViewHolder {
-
-            private TextView locationTextView;
-            private ImageView deleteImageView;
-            private ImageView tickImageView;
-
-            LocationViewHolder(@NonNull View itemView) {
-                super(itemView);
-                locationTextView = itemView.findViewById(R.id.locationTextView);
-                deleteImageView = itemView.findViewById(R.id.deleteImageView);
-                tickImageView = itemView.findViewById(R.id.tickImageView);
-            }
-
-            void bind(String location) {
-                locationTextView.setText(location);
-
-                // If this location is the selected one, show the tick
-                if (getAdapterPosition() == selectedLocation) {
-                    tickImageView.setVisibility(View.VISIBLE);
-                } else {
-                    tickImageView.setVisibility(View.INVISIBLE);
-                }
-
-                // Handle click on location item
-                itemView.setOnClickListener(v -> {
-                    // Perform your action when a location is chosen
-                    // For example, show a green tick mark
-                    tickImageView.setVisibility(View.VISIBLE);
-
-                    int debug = dataStorage.getSelectedLocation(LocationsActivity.this);
-                    int debugLayoutPosition = getLayoutPosition();
-                    int debugAdapterPosition = getAdapterPosition();
-                    dataStorage.saveSelectedLocation(LocationsActivity.this, getLayoutPosition());
-                    debug = dataStorage.getSelectedLocation(LocationsActivity.this);
-                    //untick other locations
-                    for (int i = 0; i < locations.size(); i++) {
-                        if (i != getAdapterPosition()) {
-                            RecyclerView.ViewHolder viewHolder = locations_recycler_view.findViewHolderForAdapterPosition(i);
-                            if (viewHolder != null) {
-                                ImageView tickImageView = viewHolder.itemView.findViewById(R.id.tickImageView);
-                                tickImageView.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    }
-                });
-
-                // Handle click on delete icon
-                deleteImageView.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        locations.remove(position);
-                        notifyItemRemoved(position);
-                    }
-                });
-            }
-        }
-    }
 }

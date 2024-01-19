@@ -78,6 +78,7 @@ public class DataStorage {
     }
 
     public String getLocations(Context context) {
+
         int amountOfLocations = getAmountOfLocations(context);
         SharedPreferences preferences = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String locations = "";
