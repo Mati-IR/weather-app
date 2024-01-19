@@ -12,9 +12,7 @@ import androidx.datastore.rxjava3.RxDataStore;
 public class DataStorage {
     private static final String PREFS_NAME = "preferences";
     private static final String KEY_USE_IMPERIAL_UNITS = "use_imperial_units";
-    public DataStorage() {
-        //RxDataStore<Preferences> dataStore = new RxPreferenceDataStoreBuilder(context, /*name=*/ "settings").build();
-    }
+
 
     public int getMaxAmountOfLocations() {
         return 5;

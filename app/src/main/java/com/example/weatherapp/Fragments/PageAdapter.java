@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import net.aksingh.owmjapis.model.CurrentWeather;
+
 
 public class PageAdapter extends FragmentStateAdapter {
 
