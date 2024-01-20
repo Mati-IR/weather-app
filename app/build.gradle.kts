@@ -50,4 +50,6 @@ dependencies {
     implementation("androidx.datastore:datastore-rxjava2:1.0.0")
     // optional - RxJava3 support
     implementation("androidx.datastore:datastore-rxjava3:1.0.0")
+    // import net.aksingh
+    implementation("net.aksingh:owm-japis:2.5.3.0")
 }

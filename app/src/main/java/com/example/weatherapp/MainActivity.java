@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -12,8 +13,10 @@ import com.example.weatherapp.Fragments.PageAdapter;
 import com.example.weatherapp.openweathermap.WeatherDataProvider;
 
 import net.aksingh.owmjapis.api.APIException;
+import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
+import net.aksingh.owmjapis.util.WeatherConditions;
 
 import java.io.IOException;
 
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private WeatherDataProvider weatherDataProvider;
 
     DailyWeatherForecast dailyForecast;
-    CurrentWeather currentWeather;
+    CurrentWeather currentWeather = new CurrentWeather();
 
     DataStorage dataStorage = new DataStorage();
 
@@ -40,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_screen_port);
         weatherDataProvider = new WeatherDataProvider(this);
-
+        //pageAdapter = new PageAdapter(this);
+        // Set up the fragments
+        setupViewPager();
         viewPager = findViewById(R.id.viewPager);
 
         // Check if savedInstanceState is not null, which means the activity is being recreated (e.g., orientation change)
@@ -48,13 +53,16 @@ public class MainActivity extends AppCompatActivity {
             currentFragmentIndex = savedInstanceState.getInt(CURRENT_FRAGMENT_INDEX_KEY, 0);
         }
 
-        // Set up the fragments
-        setupViewPager();
 
         // Set the current item to the saved index
         viewPager.setCurrentItem(currentFragmentIndex, false);
+
+        // Use ViewTreeObserver to wait until the views are fully loaded
+        ViewTreeObserver viewTreeObserver = viewPager.getViewTreeObserver();
+        viewPager.setCurrentItem(currentFragmentIndex, true);
+
+        // Call your methods after views are fully loaded
         updateWeatherData();
-        updateInterface();
     }
 
     public void updateWeatherData() {
@@ -68,11 +76,13 @@ public class MainActivity extends AppCompatActivity {
         String unit = this.dataStorage.getUseImperialUnits(this) ? "imperial" : "metric";
         //new FetchDailyWeatherTask().execute(Double.parseDouble(lat), Double.parseDouble(lon));
         new FetchCurrentWeather().execute(city, unit);
+        // wait for the data to be loaded
+
     }
 
     public void updateInterface() {
-        pageAdapter = new PageAdapter(this);
-        viewPager.setAdapter(pageAdapter);
+        boolean useImperialUnits = this.dataStorage.getUseImperialUnits(this);
+        pageAdapter.updateUI(currentWeather, dailyForecast, useImperialUnits ? OWM.Unit.IMPERIAL : OWM.Unit.METRIC);
     }
     private class FetchDailyWeatherTask extends AsyncTask<Double, Void, DailyWeatherForecast> {
         @Override
@@ -89,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(DailyWeatherForecast result) {
             dailyForecast = result;
-            // update your UI here using the result
+            updateInterface();
         }
     }
 
@@ -109,8 +119,10 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(CurrentWeather result) {
             currentWeather = result;
             // update your UI here using the result
+            updateInterface();
         }
     }
+
 
 
     public void openSettings(View view) {
@@ -134,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager() {
         ViewPager2 viewPager = findViewById(R.id.viewPager);
-        PageAdapter pageAdapter = new PageAdapter(this);
+        this.pageAdapter = new PageAdapter(this);
         viewPager.setAdapter(pageAdapter);
     }
 }

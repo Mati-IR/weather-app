@@ -12,6 +12,7 @@ import net.aksingh.owmjapis.api.DailyWeatherForecastAPI;
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.model.CurrentWeather;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
+import net.aksingh.owmjapis.util.WeatherConditions;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -74,7 +75,4 @@ public class WeatherDataProvider {
 
         return forecast;
     }
-
-
-
-}
+    }
